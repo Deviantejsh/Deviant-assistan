@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deviant Chat</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             margin: 0;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #1e1e2f;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #0f0f1f);
+            font-family: 'Arial', sans-serif;
             color: #fff;
+            overflow: hidden;
         }
 
         .chat-container {
@@ -24,46 +23,67 @@
             height: 80vh;
             display: flex;
             flex-direction: column;
-            background: #2c2c3a;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            background: rgba(44, 44, 58, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
             overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: linear-gradient(90deg, #1f4037, #99f2c8);
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
         }
 
         .chat-messages {
             flex-grow: 1;
-            padding: 10px;
+            padding: 15px;
             overflow-y: auto;
             background: #1e1e2f;
             color: #fff;
         }
 
         .message {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            line-height: 1.5;
+            animation: fadeIn 0.5s ease;
         }
 
         .message.user {
-            text-align: right;
-            color: #99f2c8;
+            margin-left: auto;
+            background: linear-gradient(90deg, #4caf50, #66bb6a);
+            color: #fff;
         }
 
         .message.bot {
-            text-align: left;
-            color: #f2c899;
+            margin-right: auto;
+            background: linear-gradient(90deg, #ffa726, #fb8c00);
+            color: #fff;
         }
 
         .chat-input {
             display: flex;
-            padding: 10px;
-            background: #2c2c3a;
+            padding: 15px;
+            background: rgba(44, 44, 58, 0.9);
+            border-top: 1px solid #444;
         }
 
         .chat-input input {
             flex-grow: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 5px;
             outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
         }
 
         .chat-input button {
@@ -74,16 +94,42 @@
             background: linear-gradient(90deg, #1f4037, #99f2c8);
             color: #fff;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
         .chat-input button:hover {
             background: linear-gradient(90deg, #99f2c8, #1f4037);
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #99f2c8, #1f4037);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e2f;
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
+        <div class="chat-header">Deviant Chat</div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Type your message...">
@@ -96,9 +142,6 @@
         const sendBtn = document.getElementById('sendBtn');
 
         function getBotResponse(message) {
-            const normalizedMessage = message.toLowerCase();
-
-            // Заранее запрограммированные ответы
             const responses = {
                 "привет": "Привет! Как я могу помочь?",
                 "как дела?": "У меня всё отлично, спасибо! А у вас?",
@@ -108,13 +151,7 @@
                 "как тебя зовут?": "Меня зовут Deviant. Рад знакомству!"
             };
 
-            // Проверяем заранее запрограммированный ответ
-            if (responses[normalizedMessage]) {
-                return responses[normalizedMessage];
-            }
-
-            // Генерация ответа для неизвестного вопроса
-            return `Я пока не знаю, как ответить на "${message}". Попробуйте спросить что-то другое.`;
+            return responses[message.toLowerCase()] || `Я пока не знаю, как ответить на "${message}". Попробуйте спросить что-то другое.`;
         }
 
         function addMessage(sender, text) {
