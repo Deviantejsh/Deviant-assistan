@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deviant Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #1e1e2f;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 600px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background: #2c2c3a;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #1e1e2f;
+            color: #fff;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message.user {
+            text-align: right;
+            color: #99f2c8;
+        }
+
+        .message.bot {
+            text-align: left;
+            color: #f2c899;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: #2c2c3a;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .chat-input button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #1f4037, #99f2c8);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: linear-gradient(90deg, #99f2c8, #1f4037);
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function getBotResponse(message) {
+            const normalizedMessage = message.toLowerCase();
+
+            // Заранее запрограммированные ответы
+            const responses = {
+                "привет": "Привет! Как я могу помочь?",
+                "как дела?": "У меня всё отлично, спасибо! А у вас?",
+                "кто ты?": "Я ваш друг и помощник Deviant.",
+                "что ты можешь?": "Я могу ответить на ваши вопросы и помочь в рамках моих возможностей.",
+                "какая сегодня погода?": "Извините, я пока не могу проверять погоду.",
+                "как тебя зовут?": "Меня зовут Deviant. Рад знакомству!"
+            };
+
+            // Проверяем заранее запрограммированный ответ
+            if (responses[normalizedMessage]) {
+                return responses[normalizedMessage];
+            }
+
+            // Генерация ответа для неизвестного вопроса
+            return `Я пока не знаю, как ответить на "${message}". Попробуйте спросить что-то другое.`;
+        }
+
+        function addMessage(sender, text) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = text;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            addMessage('user', userMessage);
+            const botResponse = getBotResponse(userMessage);
+            setTimeout(() => addMessage('bot', botResponse), 500);
+
+            userInput.value = '';
+        });
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
