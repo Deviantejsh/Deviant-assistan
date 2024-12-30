@@ -137,6 +137,20 @@
         ::-webkit-scrollbar-track {
             background: #1e1e2f;
         }
+
+        .mic-btn {
+            background: #1f4037;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .mic-btn.active {
+            background: #fb8c00;
+        }
     </style>
 </head>
 <body>
@@ -147,6 +161,7 @@
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Type your message...">
             <button id="sendBtn">Send</button>
+            <button class="mic-btn" id="micBtn">🎤</button>
         </div>
     </div>
     <script>
@@ -154,6 +169,7 @@
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
         const listeningIndicator = document.getElementById('listeningIndicator');
+        const micBtn = document.getElementById('micBtn');
 
         let userName = "";
         let isListening = false;
@@ -249,11 +265,13 @@
         recognition.onstart = () => {
             toggleListeningIndicator(true);
             isListening = true;
+            micBtn.classList.add('active');
         };
 
         recognition.onend = () => {
             toggleListeningIndicator(false);
             isListening = false;
+            micBtn.classList.remove('active');
         };
 
         recognition.onresult = (event) => {
@@ -267,7 +285,7 @@
             }
         };
 
-        document.body.addEventListener('dblclick', () => {
+        micBtn.addEventListener('click', () => {
             if (!isListening) {
                 recognition.start();
             }
