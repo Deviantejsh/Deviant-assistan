@@ -32,14 +32,44 @@
         }
 
         .chat-header {
+            position: relative;
             padding: 15px;
-            background: linear-gradient(135deg, #4e54c8, #8f94fb);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             text-align: center;
             font-weight: bold;
-            color: #fff;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #ff00cc, #3333ff, #00ffcc, #ffcc00);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 0, 204, 0.3), rgba(51, 51, 255, 0.3), rgba(0, 255, 204, 0.3), rgba(255, 204, 0, 0.3));
+            background-size: 300% 300%;
+            animation: gradientShift 5s ease infinite;
+            z-index: -1;
+            border-radius: 12px;
+            filter: blur(10px);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .chat-messages {
@@ -132,8 +162,7 @@
             }
 
             .chat-header {
-                font-size: 1.2rem;
-                padding: 10px;
+                font-size: 1.5rem;
             }
 
             .chat-messages {
