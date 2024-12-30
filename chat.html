@@ -102,6 +102,18 @@
             transform: scale(1.05);
         }
 
+        .listening {
+            display: none;
+            text-align: center;
+            font-size: 1rem;
+            background: #ffa726;
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -130,6 +142,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">Deviant Chat</div>
+        <div class="listening" id="listeningIndicator">Listening...</div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
             <input type="text" id="userInput" placeholder="Type your message...">
@@ -140,16 +153,62 @@
         const chatMessages = document.getElementById('chatMessages');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
+        const listeningIndicator = document.getElementById('listeningIndicator');
+
+        let userName = "";
+        let isListening = false;
 
         function getBotResponse(message) {
             const responses = {
                 "привет": "Привет! Как я могу помочь?",
                 "как дела?": "У меня всё отлично, спасибо! А у вас?",
                 "кто ты?": "Я ваш друг и помощник Deviant.",
-                "что ты можешь?": "Я могу ответить на ваши вопросы и помочь в рамках моих возможностей.",
-                "какая сегодня погода?": "Извините, я пока не могу проверять погоду.",
-                "как тебя зовут?": "Меня зовут Deviant. Рад знакомству!"
+                "что ты можешь?": "Я могу ответить на ваши вопросы, запомнить ваше имя, открыть YouTube, контролировать музыку, и многое другое!",
+                "как тебя зовут?": "Меня зовут Deviant.",
+                "открой ютуб": "Открываю YouTube...",
+                "выключи звук": "Я не могу отключить системный звук в браузере, но вы можете сделать это вручную.",
+                "увеличь громкость": "Я не могу напрямую управлять громкостью в браузере, но попробуйте использовать системные настройки.",
+                "открой калькулятор": "Открываю калькулятор...",
+                "открой браузер": "Открываю ваш браузер...",
+                "открой настройки": "Перейдите в настройки вашего устройства для изменения параметров."
             };
+
+            if (message.toLowerCase().startsWith("меня зовут")) {
+                userName = message.split(" ").slice(2).join(" ");
+                return `Приятно познакомиться, ${userName}!`;
+            }
+
+            if (message.toLowerCase() === "как меня зовут?" && userName) {
+                return `Ваше имя — ${userName}.`;
+            }
+
+            if (message.toLowerCase() === "открой ютуб") {
+                window.open("https://www.youtube.com", "_blank");
+                return responses["открой ютуб"];
+            }
+
+            if (message.toLowerCase() === "выключи звук") {
+                return responses["выключи звук"];
+            }
+
+            if (message.toLowerCase() === "увеличь громкость") {
+                return responses["увеличь громкость"];
+            }
+
+            if (message.toLowerCase() === "открой калькулятор") {
+                window.open("calculator:", "_blank");
+                return responses["открой калькулятор"];
+            }
+
+            if (message.toLowerCase() === "открой браузер") {
+                window.open("https://www.google.com", "_blank");
+                return responses["открой браузер"];
+            }
+
+            if (message.toLowerCase() === "открой настройки") {
+                window.open("settings:", "_blank");
+                return responses["открой настройки"];
+            }
 
             return responses[message.toLowerCase()] || `Я пока не знаю, как ответить на "${message}". Попробуйте спросить что-то другое.`;
         }
@@ -160,6 +219,10 @@
             messageElement.textContent = text;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function toggleListeningIndicator(show) {
+            listeningIndicator.style.display = show ? 'block' : 'none';
         }
 
         sendBtn.addEventListener('click', () => {
@@ -176,6 +239,37 @@
         userInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendBtn.click();
+            }
+        });
+
+        // Voice Recognition
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'ru-RU';
+
+        recognition.onstart = () => {
+            toggleListeningIndicator(true);
+            isListening = true;
+        };
+
+        recognition.onend = () => {
+            toggleListeningIndicator(false);
+            isListening = false;
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript.trim();
+            if (transcript.toLowerCase() === "deviant, слушай меня") {
+                recognition.start();
+            } else {
+                addMessage('user', transcript);
+                const botResponse = getBotResponse(transcript);
+                setTimeout(() => addMessage('bot', botResponse), 500);
+            }
+        };
+
+        document.body.addEventListener('dblclick', () => {
+            if (!isListening) {
+                recognition.start();
             }
         });
     </script>
